@@ -1,6 +1,6 @@
 import { GetStaticProps, NextPage } from "next";
 import SortableTable from "../../components/table/SortableTable";
-import data from "../../utils/datatest";
+import data from "../../utils/dummydata";
 
 interface ArticlesInterface {
   id: string;
