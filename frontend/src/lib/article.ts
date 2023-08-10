@@ -8,4 +8,3 @@ export interface ArticlesInterface {
     claim: string;
     evidence: string;
 }
-
