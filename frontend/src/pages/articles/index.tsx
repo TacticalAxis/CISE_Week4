@@ -1,6 +1,5 @@
 import { GetStaticProps, NextPage } from "next";
 import SortableTable from "../../components/table/SortableTable";
-import data from "../../utils/dummydata";
 
 interface ArticlesInterface {
   id: string;
@@ -36,20 +35,21 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
     </div>
   );
 };
-
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/researchPapers`);
+  const data = await res.json();
+
   // Map the data to ensure all articles have consistent property names
-  const articles = data.map((article) => ({
+  const articles = data.map((article:any) => ({
     id: article.id ?? article._id,
     title: article.title,
-    authors: article.authors,
+    authors: article.authors.join(", "),
     source: article.source,
-    pubyear: article.pubyear,
+    pubyear: String(article.publicationYear), // Assuming publication_year is stored as a number
     doi: article.doi,
     claim: article.claim,
     evidence: article.evidence,
   }));
-
 
   return {
     props: {

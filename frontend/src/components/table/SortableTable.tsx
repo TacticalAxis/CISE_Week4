@@ -6,7 +6,7 @@ interface SortableTableProps {
 }
 
 const SortableTable: React.FC<SortableTableProps> = ({ headers, data }) => (
-  <table>
+  <table className="table ">
     <thead>
       <tr>
         {headers.map((header) => (
