@@ -2,7 +2,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import router from "next/router";
 import formStyles from "../../../styles/Form.module.scss";
-import dummyData from "../../utils/dummydata";
+import dummyData from "../../utils/testdata";
 
 const NewDiscussion = () => {
   const [title, setTitle] = useState("");
