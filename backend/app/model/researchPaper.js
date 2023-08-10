@@ -29,6 +29,10 @@ const ResearchPaperSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  linkedDiscussion: { // Added linkedDiscussion field
+    type: String,
+    required: false, // Adjust as necessary; if it's optional, you may omit this line or set it to false
+  },
 });
 
 module.exports = ResearchPaper = mongoose.model('researchPaper', ResearchPaperSchema);

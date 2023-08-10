@@ -35,6 +35,7 @@ router.get('/:id', (req, res) => {
 // @description add/save research paper
 // @access Public
 router.post('/', (req, res) => {
+    console.log(req.body)
     ResearchPaper.create(req.body)
         .then((paper) => res.json({ msg: 'Research Paper added successfully' }))
         .catch((err) => {
