@@ -1,7 +1,7 @@
 import { GetStaticProps, NextPage } from "next";
 
-import { ArticlesInterface } from "@/lib/article";
-import { loadArticles } from "@/lib/articleloader";
+import { ArticlesInterface } from "../../lib/article";
+import { loadArticles } from "../../lib/articleloader";
 
 import SortableTable from "../../components/table/SortableTable";
 
@@ -30,17 +30,6 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 };
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
   const articles = await loadArticles();
-
-  // const articles = data.map((article) => ({
-  //   id: article.id,
-  //   title: article.title,
-  //   authors: article.authors.join(", "),
-  //   source: article.source,
-  //   pubyear: article.pubyear,
-  //   doi: article.doi,
-  //   claim: article.claim,
-  //   evidence: article.evidence,
-  // }));
 
   return {
     props: {
