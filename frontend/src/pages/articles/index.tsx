@@ -1,15 +1,35 @@
-import { GetStaticProps, NextPage } from "next";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 import { ArticlesInterface } from "../../lib/article";
-import { loadArticles } from "../../lib/articleloader";
-
 import SortableTable from "../../components/table/SortableTable";
 
-type ArticlesProps = {
-  articles: ArticlesInterface[];
-};
+const Articles = () => {
+  const [articles, setArticles] = useState<ArticlesInterface[]>([]);
+  
+  useEffect(() => {
+    // Define the function to load articles
+    const loadArticles = async () => {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/researchPapers`;
+      const response = await axios.get(apiUrl);
+      const data: ArticlesInterface[] = response.data.map((article: any) => ({
+        id: article.id ?? article._id,
+        title: article.title,
+        authors: article.authors.join(", "),
+        source: article.source,
+        pubyear: String(article.publicationYear),
+        doi: article.doi,
+        claim: article.claim,
+        evidence: article.evidence,
+      }));
 
-const Articles: NextPage<ArticlesProps> = ({ articles }) => {
+      setArticles(data);
+    };
+
+    // Call the function to load articles
+    loadArticles();
+  }, []); // The empty array means this effect will run once, similar to componentDidMount
+
   const headers: { key: keyof ArticlesInterface; label: string }[] = [
     { key: "title", label: "Title" },
     { key: "authors", label: "Authors" },
@@ -27,15 +47,6 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
       <SortableTable headers={headers} data={articles} />
     </div>
   );
-};
-export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
-  const articles = await loadArticles();
-
-  return {
-    props: {
-      articles,
-    },
-  };
 };
 
 export default Articles;
