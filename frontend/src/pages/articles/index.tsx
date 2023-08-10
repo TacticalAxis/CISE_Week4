@@ -1,16 +1,9 @@
 import { GetStaticProps, NextPage } from "next";
-import SortableTable from "../../components/table/SortableTable";
 
-interface ArticlesInterface {
-  id: string;
-  title: string;
-  authors: string;
-  source: string;
-  pubyear: string;
-  doi: string;
-  claim: string;
-  evidence: string;
-}
+import { ArticlesInterface } from "@/lib/article";
+import { loadArticles } from "@/lib/articleloader";
+
+import SortableTable from "../../components/table/SortableTable";
 
 type ArticlesProps = {
   articles: ArticlesInterface[];
@@ -36,20 +29,18 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
   );
 };
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/researchPapers`);
-  const data = await res.json();
+  const articles = await loadArticles();
 
-  // Map the data to ensure all articles have consistent property names
-  const articles = data.map((article:any) => ({
-    id: article.id ?? article._id,
-    title: article.title,
-    authors: article.authors.join(", "),
-    source: article.source,
-    pubyear: String(article.publicationYear), // Assuming publication_year is stored as a number
-    doi: article.doi,
-    claim: article.claim,
-    evidence: article.evidence,
-  }));
+  // const articles = data.map((article) => ({
+  //   id: article.id,
+  //   title: article.title,
+  //   authors: article.authors.join(", "),
+  //   source: article.source,
+  //   pubyear: article.pubyear,
+  //   doi: article.doi,
+  //   claim: article.claim,
+  //   evidence: article.evidence,
+  // }));
 
   return {
     props: {
