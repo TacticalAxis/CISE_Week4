@@ -1,4 +1,6 @@
 import { FormEvent, useState } from "react";
+import axios from "axios";
+import router from "next/router";
 import formStyles from "../../../styles/Form.module.scss";
 
 const NewDiscussion = () => {
@@ -8,26 +10,53 @@ const NewDiscussion = () => {
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
   const [summary, setSummary] = useState("");
+  const [claim, setClaim] = useState("");
+  const [evidence, setEvidence] = useState("");
   const [linkedDiscussion, setLinkedDiscussion] = useState("");
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log(
-      JSON.stringify({
-        title,
-        authors,
-        source,
-        publication_year: pubYear,
-        doi,
-        summary,
-        linked_discussion: linkedDiscussion,
-      })
-    );
+    const strPubYear = pubYear.toString();
+
+    const newArticle = {
+      title,
+      authors,
+      source,
+      publicationYear: strPubYear,
+      doi,
+      summary,
+      claim,
+      evidence,
+      linked_discussion: linkedDiscussion,
+    };
+
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/researchPapers`,
+        newArticle
+      );
+
+			// reset the form
+			setTitle("");
+			setAuthors([]);
+			setSource("");
+			setPubYear(0);
+			setDoi("");
+			setSummary("");
+			setClaim(""); // Added claim
+			setEvidence(""); // Added evidence
+			setLinkedDiscussion("");
+
+			// redirect to /
+			router.push("/");
+    } catch (error) {
+			// show an alert if there is an error
+			alert(error);
+    }
   };
 
   // Some helper methods for the authors array
-
   const addAuthor = () => {
     setAuthors(authors.concat([""]));
   };
@@ -45,7 +74,6 @@ const NewDiscussion = () => {
   };
 
   // Return the full form
-
   return (
     <div className="container">
       <h1>New Article</h1>
@@ -61,7 +89,6 @@ const NewDiscussion = () => {
             setTitle(event.target.value);
           }}
         />
-
         <label htmlFor="author">Authors:</label>
         {authors.map((author, index) => {
           return (
@@ -92,7 +119,6 @@ const NewDiscussion = () => {
         >
           +
         </button>
-
         <label htmlFor="source">Source:</label>
         <input
           className={formStyles.formItem}
@@ -104,7 +130,6 @@ const NewDiscussion = () => {
             setSource(event.target.value);
           }}
         />
-
         <label htmlFor="pubYear">Publication Year:</label>
         <input
           className={formStyles.formItem}
@@ -121,7 +146,6 @@ const NewDiscussion = () => {
             }
           }}
         />
-
         <label htmlFor="doi">DOI:</label>
         <input
           className={formStyles.formItem}
@@ -133,7 +157,6 @@ const NewDiscussion = () => {
             setDoi(event.target.value);
           }}
         />
-
         <label htmlFor="summary">Summary:</label>
         <textarea
           className={formStyles.formTextArea}
@@ -141,7 +164,20 @@ const NewDiscussion = () => {
           value={summary}
           onChange={(event) => setSummary(event.target.value)}
         />
-
+        <label htmlFor="claim">Claim:</label> {/* Added claim input */}
+        <textarea
+          className={formStyles.formTextArea}
+          name="claim"
+          value={claim}
+          onChange={(event) => setClaim(event.target.value)}
+        />
+        <label htmlFor="evidence">Evidence:</label> {/* Added evidence input */}
+        <textarea
+          className={formStyles.formTextArea}
+          name="evidence"
+          value={evidence}
+          onChange={(event) => setEvidence(event.target.value)}
+        />
         <button className={formStyles.formItem} type="submit">
           Submit
         </button>
