@@ -37,8 +37,9 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     ResearchPaper.create(req.body)
         .then((paper) => res.json({ msg: 'Research Paper added successfully' }))
-        .catch((err) =>
-            res.status(400).json({ error: 'Unable to add this research paper' })
+        .catch((err) => {
+                res.status(400).json({ error: 'Unable to add this research paper' })
+            }
         )
 })
 
@@ -61,5 +62,14 @@ router.delete('/:id', (req, res) => {
         .then((paper) => res.json({ msg: 'Research Paper entry deleted successfully' }))
         .catch((err) => res.status(404).json({ error: 'No such a research paper' }))
 })
+
+// @route DELETE api/researchPapers
+// @description Delete all research papers
+// @access Public
+router.delete('/', (req, res) => {
+    ResearchPaper.deleteMany({})
+      .then(() => res.json({ msg: 'All Research Paper entries deleted successfully' }))
+      .catch((err) => res.status(404).json({ error: 'An error occurred while deleting research papers' }));
+  })
 
 module.exports = router

@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import axios from "axios";
 import router from "next/router";
 import formStyles from "../../../styles/Form.module.scss";
+import dummyData from "../../utils/dummydata";
 
 const NewDiscussion = () => {
   const [title, setTitle] = useState("");
@@ -14,6 +15,39 @@ const NewDiscussion = () => {
   const [evidence, setEvidence] = useState("");
   const [linkedDiscussion, setLinkedDiscussion] = useState("");
 
+  const resetToDefaultArticles = async () => {
+    try {
+      // Delete all existing articles
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/researchPapers`);
+
+      // Loop through the dummy data and post each article
+      for (const article of dummyData) {
+        const newArticle = {
+          title: article.title,
+          authors: article.authors.split(", "),
+          source: article.source || "N/A", // If there is no source, use "N/A"
+          publicationYear: article.pubyear.toString() || "N/A", // If there is no publication year, use "N/A"
+          doi: article.doi || "N/A", // If there is no DOI, use "N/A"
+          claim: article.claim || "N/A", // If there is no claim, use "N/A"
+          evidence: article.evidence || "N/A", // If there is no evidence, use "N/A"
+        };
+
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/researchPapers`,
+          newArticle
+        );
+      }
+
+      // You can navigate or refresh the data here as needed
+      alert("Default articles added successfully!");
+
+      // Redirect to articles page
+      router.push("/articles");
+    } catch (error) {
+      alert("An error occurred while adding default articles: " + error);
+    }
+  };
+
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -25,10 +59,8 @@ const NewDiscussion = () => {
       source,
       publicationYear: strPubYear,
       doi,
-      summary,
       claim,
       evidence,
-      linked_discussion: linkedDiscussion,
     };
 
     try {
@@ -37,22 +69,20 @@ const NewDiscussion = () => {
         newArticle
       );
 
-			// reset the form
-			setTitle("");
-			setAuthors([]);
-			setSource("");
-			setPubYear(0);
-			setDoi("");
-			setSummary("");
-			setClaim(""); // Added claim
-			setEvidence(""); // Added evidence
-			setLinkedDiscussion("");
+      // reset the form
+      setTitle("");
+      setAuthors([]);
+      setSource("");
+      setPubYear(0);
+      setDoi("");
+      setClaim("");
+      setEvidence("");
 
-			// redirect to /
-			router.push("/");
+      // redirect to the articles page
+      router.push("/articles");
     } catch (error) {
-			// show an alert if there is an error
-			alert(error);
+      // show an alert if there is an error
+      alert(error);
     }
   };
 
@@ -77,6 +107,9 @@ const NewDiscussion = () => {
   return (
     <div className="container">
       <h1>New Article</h1>
+      <button onClick={resetToDefaultArticles} type="button">
+        Reset Articles
+      </button>
       <form className={formStyles.form} onSubmit={submitNewArticle}>
         <label htmlFor="title">Title:</label>
         <input
@@ -156,13 +189,6 @@ const NewDiscussion = () => {
           onChange={(event) => {
             setDoi(event.target.value);
           }}
-        />
-        <label htmlFor="summary">Summary:</label>
-        <textarea
-          className={formStyles.formTextArea}
-          name="summary"
-          value={summary}
-          onChange={(event) => setSummary(event.target.value)}
         />
         <label htmlFor="claim">Claim:</label> {/* Added claim input */}
         <textarea
